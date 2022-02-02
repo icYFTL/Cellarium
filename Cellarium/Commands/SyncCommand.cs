@@ -24,21 +24,28 @@ public class SyncCommand : BaseCommand
         var externalPath = arguments.First(x => x.Content == "external_path").Value;
         
         var forceCreateExternalPath = false;
-        bool.TryParse(arguments.FirstOrDefault(x => x.Content == "force_create_external_path")?.Value, out forceCreateExternalPath);
+        var _fcep = arguments.FirstOrDefault(x => x.Content == "force_create_external_path")?.Value;
+        if (!String.IsNullOrEmpty(_fcep))
+            if (!bool.TryParse(_fcep, out forceCreateExternalPath))
+                throw new ArgumentException("Bad force_create_external_path passed");
+        
         
         var clear = true;
-        bool.TryParse(arguments.FirstOrDefault(x => x.Content == "clear")?.Value, out clear);
-        
-        var removePermanently = false;
-        bool.TryParse(arguments.FirstOrDefault(x => x.Content == "remove_permanently_external")?.Value, out removePermanently);
-        
-        var overwrite = false;
-        bool.TryParse(arguments.FirstOrDefault(x => x.Content == "overwrite")?.Value, out overwrite);
+        var _c = arguments.FirstOrDefault(x => x.Content == "clear")?.Value;
+        if (!String.IsNullOrEmpty(_c))
+            if (!bool.TryParse(_c, out clear))
+                throw new ArgumentException("Bad clear passed");
         
 
-        var yandexCloudApi = new YandexCloudApi(new DiskHttpApi(Environment.GetEnvironmentVariable("token")), clear, removePermanently);
-        var handler = new IoHandler(yandexCloudApi, internalPath, externalPath, forceCreateExternalPath, overwrite);
-        handler.TransferToCloud();
+        var overwrite = false;
+        var _o = arguments.FirstOrDefault(x => x.Content == "overwrite")?.Value;
+        if (!String.IsNullOrEmpty(_o))
+            if (!bool.TryParse(_o, out overwrite))
+                throw new ArgumentException("Bad overwrite passed");
+        
+        var yandexCloudApi = new YandexCloudApi(new DiskHttpApi(Environment.GetEnvironmentVariable("token")), clear);
+        var handler = new IoHandler(yandexCloudApi, externalPath, forceCreateExternalPath);
+        handler.TransferToCloud(internalPath, overwrite);
     }
 
     public SyncCommand()
@@ -80,11 +87,6 @@ public class SyncCommand : BaseCommand
             {
                 Content = "clear",
                 Value = "true"
-            },
-            new ()
-            {
-                Content = "remove_permanently_external",
-                Value = "false"
             },
             new ()
             {

@@ -1,12 +1,5 @@
 ﻿using Cellarium.Commands.Parameters;
 using Cellarium.Handlers;
-using Cellarium.Utils;
-
-if (Utils.PriorProcess() != null)
-{
-    Console.WriteLine("Another instance of the app is already running.");
-    Environment.Exit(-1);
-}
 
 if (!File.Exists(".token"))
 {

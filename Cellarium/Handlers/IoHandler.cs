@@ -5,22 +5,15 @@ namespace Cellarium.Handlers;
 
 public class IoHandler
 {
-    private readonly string _internalPath;
-    private readonly string _internalRoot;
     private readonly string _externalPath;
     private readonly YandexCloudApi _yandex;
     private readonly bool _forcePathCreate;
-    private readonly bool _overwrite;
 
-    public IoHandler(YandexCloudApi yandex, string internalPath, string externalPath, bool forcePathCreate = false,
-        bool overwrite = false)
+    public IoHandler(YandexCloudApi yandex,  string externalPath, bool forcePathCreate = false)
     {
-        _internalPath = internalPath;
-        _internalRoot = _internalPath.Split(Path.DirectorySeparatorChar).TakeLast(1).First();
         _externalPath = externalPath;
         _yandex = yandex;
         _forcePathCreate = forcePathCreate;
-        _overwrite = overwrite;
         CreateExternalPath();
     }
 
@@ -35,12 +28,12 @@ public class IoHandler
         }
     }
 
-    private IEnumerable<FileInfo> GetLocalFiles()
+    private IEnumerable<FileInfo> GetLocalFiles(string internalPath)
     {
         IEnumerable<FileInfo> files = new List<FileInfo>();
         try
         {
-            files = Directory.EnumerateFiles(_internalPath, "*.*", SearchOption.AllDirectories)
+            files = Directory.EnumerateFiles(internalPath, "*.*", SearchOption.AllDirectories)
                 .Select(x => new FileInfo(x));
         }
         catch (Exception ex)
@@ -53,14 +46,15 @@ public class IoHandler
             files; //.Where(x => !LocalStorage.Contains(item => item.Path == x.FullName || (item.DoNotTouchUntil ?? DateTime.Now) > DateTime.Now));
     }
 
-    public void TransferToCloud()
+    public void TransferToCloud(string internalPath, bool overwrite = false)
     {
-        var files = GetLocalFiles() ?? throw new ArgumentNullException("GetLocalFiles()");
+        var internal_root = internalPath.Split(Path.DirectorySeparatorChar).TakeLast(1).First();
+        var files = GetLocalFiles(internalPath) ?? throw new ArgumentNullException("GetLocalFiles()");
         var tasks = new List<Task>();
         foreach (var file in files)
         {
             var backupProjectRoot =
-                file.FullName.Split(Path.DirectorySeparatorChar).SkipWhile(x => x != _internalRoot).Skip(1).First();
+                file.FullName.Split(Path.DirectorySeparatorChar).SkipWhile(x => x != internal_root).Skip(1).First();
 
             tasks.Add(Task.Run(async () =>
             {
@@ -69,7 +63,7 @@ public class IoHandler
                     InternalPath = file.FullName,
                     ExternalPath = Path.Combine(_externalPath, backupProjectRoot),
                     FileName = file.Name
-                }, _overwrite);
+                }, overwrite);
             }));
         }
 
@@ -77,45 +71,50 @@ public class IoHandler
     }
 
 
-    public void TransferToCloud(object source, FileSystemEventArgs e)
+    // public void TransferToCloud(object source, FileSystemEventArgs e)
+    // {
+    //     var tasks = new List<Task>();
+    //
+    //     var backupProjectRoot =
+    //         e.FullPath.Split(Path.DirectorySeparatorChar).SkipWhile(x => x != _internalRoot).Skip(1).First();
+    //
+    //     tasks.Add(Task.Run(() =>
+    //     {
+    //         _yandex.UploadFileAsync(new CellariumFile
+    //         {
+    //             InternalPath = e.FullPath,
+    //             ExternalPath = Path.Combine(_externalPath, backupProjectRoot),
+    //             FileName = e.Name ?? $"{DateTimeOffset.Now.ToUnixTimeSeconds()}.undefined"
+    //         });
+    //     }));
+    //
+    //
+    //     Task.WaitAll(tasks.ToArray());
+    // }
+
+
+    public void ClearExpired(int delta, bool deletePermanently = false)
     {
+        var expiredFiles = _yandex.GetFileListAsync(_externalPath).Result
+            .Where(file => file.Created + TimeSpan.FromDays(delta) < DateTime.Now);
         var tasks = new List<Task>();
 
-        var backupProjectRoot =
-            e.FullPath.Split(Path.DirectorySeparatorChar).SkipWhile(x => x != _internalRoot).Skip(1).First();
-
-        tasks.Add(Task.Run(() =>
+        foreach (var file in expiredFiles)
         {
-            _yandex.UploadFileAsync(new CellariumFile
+            tasks.Add(Task.Run(async () =>
             {
-                InternalPath = e.FullPath,
-                ExternalPath = Path.Combine(_externalPath, backupProjectRoot),
-                FileName = e.Name ?? $"{DateTimeOffset.Now.ToUnixTimeSeconds()}.undefined"
-            });
-        }));
-
-
+                await _yandex.RemoveFileAsync(file.Path, deletePermanently);
+            }));
+        }
+        
         Task.WaitAll(tasks.ToArray());
     }
-
-
-    private void ClearExpired(object source, FileSystemEventArgs e)
+    
+    public void ClearCount(int maxCount, bool deletePermanently = false)
     {
         throw new NotImplementedException();
-        // var expiredFiles = _yandex.GetFileListAsync(_externalPath).Result
-        //     .Where(file => file.);
-        //
-        // foreach (var file in expiredFiles)
-        // {
-        //     try
-        //     {
-        //         _yandex.RemoveFileAsync(file.Path);
-        //         // _logger.LogInformation($"[External Removing]\nStatus: true; Path: {file.Path}");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // _logger.LogError($"[External Removing]\nStatus: false; Path: {file.Path}\n{ex}");
-        //     }
-        // }
+        var files = _yandex.GetFileListAsync(_externalPath).Result;
+
+
     }
 }

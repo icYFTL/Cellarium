@@ -25,7 +25,7 @@ public static class ArgsHandler
 
         if (command == null)
         {
-            Console.WriteLine($"Not a valid arg: {command}");
+            Console.WriteLine($"Not a valid arg: {arg}");
             Environment.Exit(-1);
         }
 

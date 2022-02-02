@@ -9,19 +9,17 @@ namespace Cellarium.Api
     {
         private readonly IDiskApi _yandex;
         private readonly bool _clear;
-        private readonly bool _deletePermanently;
 
-        public YandexCloudApi(IDiskApi yandex, bool clear = true, bool deletePermanently = false)
+        public YandexCloudApi(IDiskApi yandex, bool clear = true)
         {
             _yandex = yandex;
             _clear = clear;
-            _deletePermanently = deletePermanently;
         }
 
-        private void OnSuccess(CellariumFile file) => Console.WriteLine($"[Success] File: {file.InternalPath}");
-        private void OnError(CellariumFile file, string ex) => Console.WriteLine($"[Error] File: {file.InternalPath}\n{ex}");
+        private void OnSuccess(string path, string taskType, string fileType) => Console.WriteLine($"[Success] File({fileType}): {path}");
+        private void OnError(string path,string taskType, string fileType, string ex) => Console.WriteLine($"[Error] File({fileType}): {path}\n{ex}");
 
-        public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false, Action<CellariumFile>? onSuccess = null, Action<CellariumFile, String>? onError = null)
+        public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false, Action<String, String, String>? onSuccess = null, Action<String, String, String, String>? onError = null)
         {
             onSuccess ??= OnSuccess;
             onError ??= OnError;
@@ -42,12 +40,12 @@ namespace Cellarium.Api
                 if (_clear)
                     File.Delete(file.InternalPath);
 
-                onSuccess(file);
+                onSuccess(file.InternalPath,  "Upload", "Internal");
                 return true;
             }
             catch (Exception ex)
             {
-                onError(file, ex.ToString());
+                onError(file.InternalPath, "Upload", "Internal", ex.ToString());
                 // _logger.LogError($"[Uploading]\nStatus: Exception; Path: {file.InternalPath}\n{ex}");
                 // LocalStorage.Get().First(x => x.Path == file.InternalPath).DoNotTouchUntil = DateTime.Now + TimeSpan.FromHours(1);
                 // await Task.FromException(ex);
@@ -99,18 +97,40 @@ namespace Cellarium.Api
             }
         }
 
-        public async Task<Link> CreatePathAsync(string externalPath)
+        public async Task<bool> CreatePathAsync(string externalPath)
         {
-            return await _yandex.Commands.CreateDictionaryAsync(externalPath); // Idk why dictionary xd
+            try
+            {
+                await _yandex.Commands.CreateDictionaryAsync(externalPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
-        public async Task RemoveFileAsync(string externalPath)
+        public async Task<bool> RemoveFileAsync(string externalPath, bool deletePermanently = false, Action<String, String, String>? onSuccess = null, Action<String, String, String, String>? onError = null)
         {
-            _yandex.Commands.DeleteAsync(new DeleteFileRequest
+            onSuccess ??= OnSuccess;
+            onError ??= OnError;
+
+            try
             {
-                Path = externalPath,
-                Permanently = _deletePermanently
-            });
+                await _yandex.Commands.DeleteAsync(new DeleteFileRequest
+                {
+                    Path = externalPath,
+                    Permanently = deletePermanently
+                });
+                onSuccess(externalPath, "Delete", "External");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                onError(externalPath, "Delete", "External", ex.ToString());
+                return false;
+            }
+
         }
     }
 }
