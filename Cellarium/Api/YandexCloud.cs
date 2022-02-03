@@ -55,12 +55,26 @@ namespace Cellarium.Api
 
         public async Task<IQueryable<Resource>> GetFileListAsync(string externalPath)
         {
-            var resourceDescription = await _yandex.MetaInfo.GetInfoAsync(new ResourceRequest
+            var items = new List<Resource>();
+            var offset = 0;
+            
+            while (true)
             {
-                Path = externalPath
-            }, CancellationToken.None);
+                var _items = await _yandex.MetaInfo.GetInfoAsync(new ResourceRequest
+                {
+                    Path = externalPath,
+                    Limit = 100,
+                    Offset = offset
+                }, CancellationToken.None);
+                
+                if (!_items.Embedded.Items.Any())
+                    break;
 
-            return resourceDescription.Embedded.Items.Where(item => item.Type == ResourceType.File).AsQueryable();
+                items.AddRange(_items.Embedded.Items);
+                offset += 100;
+            }
+
+            return items.Where(item => item.Type == ResourceType.File).AsQueryable();
         }
 
         public async Task DownloadFilesAsync(IQueryable<Resource> files, string externalPath, string internalPath)

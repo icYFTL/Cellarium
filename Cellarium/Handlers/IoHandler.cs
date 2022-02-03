@@ -107,14 +107,23 @@ public class IoHandler
             }));
         }
         
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll(tasks.ToArray()); 
     }
     
     public void ClearCount(int maxCount, bool deletePermanently = false)
     {
-        throw new NotImplementedException();
-        var files = _yandex.GetFileListAsync(_externalPath).Result;
-
-
+        var files = _yandex.GetFileListAsync(_externalPath).Result.OrderByDescending(x => x.Created);
+        var filesToDelete = files.Take(new Range(maxCount, files.Count()));
+        var tasks = new List<Task>();
+         
+        foreach (var file in filesToDelete)
+        {
+            tasks.Add(Task.Run(async () =>
+            {
+                await _yandex.RemoveFileAsync(file.Path, deletePermanently);
+            }));
+        }
+        
+        Task.WaitAll(tasks.ToArray());
     }
 }
