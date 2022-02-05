@@ -7,7 +7,7 @@ if (!File.Exists(".token"))
     Environment.Exit(-1);
 }
 
-var token = File.ReadAllText(".token");
+var token = File.ReadAllText(".token").Trim();
 
 if (token.Length == 0)
 {
