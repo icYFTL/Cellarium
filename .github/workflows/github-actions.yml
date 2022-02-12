@@ -32,6 +32,7 @@ jobs:
       - run: mv Cellarium/bin/Release/net6.0/* ./package/usr/cellarium
       - run: ln -s ./package/usr/cellarium/Cellarium ./package/usr/bin/cellarium
       - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
+      - run: "chmod 755 ./package/DEBIAN/postinst"
 
       - name: Making dpkg
         run: dpkg-deb --build ./package
