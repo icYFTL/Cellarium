@@ -30,7 +30,7 @@ jobs:
       - run: mkdir -p ./package/usr/cellarium
       - run: mkdir -p ./package/usr/bin
       - run: mv Cellarium/bin/Release/net6.0/* ./package/usr/cellarium
-      - run: ln -s ./package/usr/cellarium/Cellarium ./package/usr/bin/cellarium
+      - run: sudo ln -s ./package/usr/cellarium/Cellarium ./package/usr/bin/cellarium
       # - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
       - run: touch ./package/DEBIAN/postinst
       - run: "chmod 755 ./package/DEBIAN/postinst"
@@ -39,9 +39,11 @@ jobs:
         run: dpkg-deb --build ./package
       
       - run: mv package.deb cellarium.deb
-      - run: sudo apt update && sudo apt install gcc-multilib
+      - run: sudo apt update && sudo apt install gcc-multilib -y
       - name: Trying to install deb
         run: sudo dpkg -i ./cellarium.deb
+      
+      - run: ls /usr/bin
 
       - name: Making .md release body
         run: "CELLARIUM_VERSION=$(cellarium -v) && echo '# v${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md"
