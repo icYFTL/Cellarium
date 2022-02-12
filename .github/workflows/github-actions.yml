@@ -38,7 +38,7 @@ jobs:
         run: dpkg-deb --build ./package
 
       - name: Trying to install deb
-      - run: dpkg -i ./Cellarium.deb
+        run: dpkg -i ./Cellarium.deb
 
       - name: Making .md release body
         run: "CELLARIUM_VERSION=$(cellarium -v) && echo '# v${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md"
