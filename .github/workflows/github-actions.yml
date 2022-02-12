@@ -5,9 +5,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        dotnet-version: ['6.x.x']
     permissions:
       contents: write
         
@@ -21,7 +18,7 @@ jobs:
       - name: Setup .NET SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v1.7.2
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: '6.x'
       - name: Install dependencies
         run: dotnet restore
       - name: Build
