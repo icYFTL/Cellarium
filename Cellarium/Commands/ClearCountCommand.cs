@@ -1,4 +1,5 @@
-﻿using Cellarium.Api;
+﻿using System.ComponentModel.DataAnnotations;
+using Cellarium.Api;
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;

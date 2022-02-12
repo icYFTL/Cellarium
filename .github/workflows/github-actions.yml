@@ -48,7 +48,7 @@ jobs:
       - run: 'CELLARIUM_VERSION=$(grep -oP "<Version>(.*)</Version>" ./Cellarium/Cellarium.csproj | grep -oEi "[0-9]+\.[0-9]+\.[0-9]+")'
 
       - name: Making .md release body
-        run: "echo '# v${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
+        run: "echo '# v ${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
