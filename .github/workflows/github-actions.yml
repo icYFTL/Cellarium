@@ -15,10 +15,10 @@ jobs:
       
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Setup .NET SDK 6.x
+      - name: Setup .NET SDK 6.0.x
         uses: actions/setup-dotnet@v1.7.2
         with:
-          dotnet-version: '6.x'
+          dotnet-version: 6.0.x
 
       - name: Building the sources
         run: dotnet restore
@@ -32,6 +32,6 @@ jobs:
       - run: mv Cellarium/bin/Release/net6.0/* ./package/usr/cellarium
       - run: ln -s ./package/usr/cellarium/Cellarium ./package/usr/bin/cellarium
       - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
-      
+
       - name: Making dpkg
         run: dpkg-deb --build ./package
