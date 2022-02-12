@@ -42,11 +42,9 @@ jobs:
       - run: sudo apt update && sudo apt install gcc-multilib -y
       - name: Trying to install deb
         run: sudo dpkg -i ./cellarium.deb
-      
-      - run: ls /usr/bin
 
       - name: Making .md release body
-        run: "CELLARIUM_VERSION=$(cellarium -v) && echo '# v${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md"
+        run: "CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && echo '# v${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md"
 
       - name: Create Release
         uses: ncipollo/release-action@v1
