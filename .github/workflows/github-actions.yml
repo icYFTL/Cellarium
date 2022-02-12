@@ -36,6 +36,8 @@ jobs:
 
       - name: Making dpkg
         run: dpkg-deb --build ./package
+      
+      - run: ls -a
 
       - name: Trying to install deb
         run: sudo dpkg -i ./cellarium.deb
