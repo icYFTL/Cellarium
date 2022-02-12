@@ -43,6 +43,8 @@ jobs:
       - name: Trying to install deb
         run: sudo dpkg -i ./cellarium.deb
 
+      - run: ls /usr/bin
+
       - name: Making .md release body
         run: "CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && echo '# v${CELLARIUM_VERSION}\n\n${{github.event.commits[0].message}}' >> release.md"
 
