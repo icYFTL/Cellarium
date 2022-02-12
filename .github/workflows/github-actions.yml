@@ -45,13 +45,13 @@ jobs:
         run: sudo dpkg -i ./cellarium.deb
 
       # - run: 'echo "CELLARIUM_VERSION=$(grep -oP \"<Version>(.*)</Version>\" ./Cellarium/Cellarium.csproj | grep -oEi \"[0-9]+\.[0-9]+\.[0-9]+\")" >> $GITHUB_ENV'
-
+      - run: 'echo "CELLARIUM_VERSION=$(cellarium -v)" >> $GITHUB_ENV'
       - name: Making .md release body
-        run: "echo '# ${cellarium -v}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
+        run: "echo '# v${{env.CELLARIUM_VERSION}}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: Release
+          tag: Release_${{env.CELLARIUM_VERSION}}
           artifacts: "cellarium.deb"
           bodyFile: "release.md"
           token: ${{ secrets.GITHUB_TOKEN }}

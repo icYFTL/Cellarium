@@ -14,7 +14,7 @@ public class VersionCommand : BaseCommand
     public override void Run(params BaseParameter[] arguments)
     {
         base.Run(arguments);
-        Console.WriteLine($"v{Utils.GetAssemblyVersion()}");
+        Console.WriteLine($"{Utils.GetAssemblyVersion()}");
     }
 
     public VersionCommand()
