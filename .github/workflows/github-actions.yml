@@ -26,7 +26,7 @@ jobs:
 
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
-      - run: "echo 'Package: Cellarium\nVersion: 1.0\nSection: unknown\nPriority: optional\nDepends: libpthread-stubs0-dev,libc6,libstdc++6,gcc-multilib \nArchitecture: amd64\nEssential: no\nInstalled-Size: 20\nMaintainer: icyftl\nDescription: File manager for yandex drive' >> ./package/DEBIAN/control"
+      - run: "echo 'Package: Cellarium\nVersion: 1.0\nSection: unknown\nPriority: optional\nDepends: libpthread-stubs0-dev,libc6,libstdc++6,gcc-multilib\nArchitecture: amd64\nEssential: no\nInstalled-Size: 20\nMaintainer: icyftl\nDescription: File manager for yandex drive' >> ./package/DEBIAN/control"
       - run: mkdir -p ./package/usr/cellarium
       - run: mkdir -p ./package/usr/bin
       - run: mv Cellarium/bin/Release/net6.0/* ./package/usr/cellarium
@@ -39,7 +39,7 @@ jobs:
         run: dpkg-deb --build ./package
       
       - run: mv package.deb cellarium.deb
-
+      - run: sudo apt update && sudo apt install gcc-multilib
       - name: Trying to install deb
         run: sudo dpkg -i ./cellarium.deb
 
