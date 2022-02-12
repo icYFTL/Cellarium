@@ -48,6 +48,6 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "Cellarium.deb"
+          artifacts: "cellarium.deb"
           bodyFile: "release.md"
           token: ${{ secrets.GITHUB_TOKEN }}
