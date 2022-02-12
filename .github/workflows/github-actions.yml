@@ -32,9 +32,8 @@ jobs:
       - run: mkdir -p ./package/usr/cellarium
       - run: mkdir -p ./package/usr/bin
       - run: mv Cellarium/bin/Release/net6.0/* ./package/usr/cellarium
-      - run: sudo ln -s ./package/usr/cellarium/Cellarium ./package/usr/bin/cellarium
+      - run: "echo 'sudo ln -s /usr/cellarium/Cellarium /usr/bin/cellarium' >> ./package/DEBIAN/postinst"
       # - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
-      - run: touch ./package/DEBIAN/postinst
       - run: "chmod 755 ./package/DEBIAN/postinst"
 
       - name: Making dpkg
@@ -45,10 +44,10 @@ jobs:
       - name: Trying to install deb
         run: sudo dpkg -i ./cellarium.deb
 
-      - run: 'echo "CELLARIUM_VERSION=$(grep -oP \"<Version>(.*)</Version>\" ./Cellarium/Cellarium.csproj | grep -oEi \"[0-9]+\.[0-9]+\.[0-9]+\")" >> $GITHUB_ENV'
+      # - run: 'echo "CELLARIUM_VERSION=$(grep -oP \"<Version>(.*)</Version>\" ./Cellarium/Cellarium.csproj | grep -oEi \"[0-9]+\.[0-9]+\.[0-9]+\")" >> $GITHUB_ENV'
 
       - name: Making .md release body
-        run: "echo '# v${{env.CELLARIUM_VERSION}}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
+        run: "echo '# ${cellarium -v}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
