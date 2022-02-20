@@ -23,7 +23,7 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Building the sources
-        run: dotnet restore
+        run: dotnet restore -r linux-x64
       - run: dotnet build --configuration Release --no-restore --self-contained true --os linux
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
