@@ -9,7 +9,7 @@ if (File.Exists(".token"))
     var token = File.ReadAllText(".token").Trim();
 
     if (String.IsNullOrEmpty(token))
-        File.Delete(".token");
+        File.Delete(Path.Join(AppDomain.CurrentDomain.BaseDirectory, ".token"));
     else
         Environment.SetEnvironmentVariable("token", token);
 }
