@@ -2,29 +2,33 @@ using YandexDisk.Client;
 using YandexDisk.Client.Clients;
 using YandexDisk.Client.Protocol;
 using Cellarium.Models;
+using NLog;
 
 namespace Cellarium.Api
 {
+    using Logger=Utils.Logger;
     public class YandexCloudApi
     {
         private readonly IDiskApi _yandex;
         private readonly bool _clear;
+        private readonly ILogger _logger;
 
         public YandexCloudApi(IDiskApi yandex, bool clear = true)
         {
             _yandex = yandex;
             _clear = clear;
+            _logger = new Logger().GetLogger<YandexCloudApi>();
         }
 
-        private void OnSuccess(string path, string taskType, string fileType) => Console.WriteLine($"[Success] File({fileType}): {path}");
-        private void OnError(string path,string taskType, string fileType, string ex) => Console.WriteLine($"[Error] File({fileType}): {path}\n{ex}");
+        private void OnSuccess(string path, string taskType, string fileType) => _logger.Info($"File({fileType}) sent: {path}");
+        private void OnError(string path,string taskType, string fileType, string ex) => _logger.Error($"File({fileType}): {path}\n{ex}");
 
         public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false, Action<String, String, String>? onSuccess = null, Action<String, String, String, String>? onError = null)
         {
             onSuccess ??= OnSuccess;
             onError ??= OnError;
             
-            Console.WriteLine($"[Info] File: {file.FileName} in progress");
+            _logger.Info($"File: {file.FileName} in progress");
             
             // _logger.LogDebug($"[Uploading]\nStatus: Started; Path: {file.InternalPath}");
             try

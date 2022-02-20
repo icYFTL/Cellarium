@@ -1,19 +1,23 @@
 using Cellarium.Api;
 using Cellarium.Models;
+using NLog;
 
 namespace Cellarium.Handlers;
+using Logger=Cellarium.Utils.Logger;
 
 public class IoHandler
 {
     private readonly string _externalPath;
     private readonly YandexCloudApi _yandex;
     private readonly bool _forcePathCreate;
-
+    private readonly ILogger _logger;
+    
     public IoHandler(YandexCloudApi yandex,  string externalPath, bool forcePathCreate = false)
     {
         _externalPath = externalPath;
         _yandex = yandex;
         _forcePathCreate = forcePathCreate;
+        _logger = new Logger().GetLogger<IoHandler>();
         CreateExternalPath();
     }
 
@@ -24,7 +28,10 @@ public class IoHandler
             if (_forcePathCreate)
                 await _yandex.CreatePathAsync(_externalPath);
             else
-                throw new InvalidOperationException($"External path {_externalPath} does not exist");
+            {
+                _logger.Fatal($"External path {_externalPath} does not exist");
+                throw new InvalidOperationException();
+            }
         }
     }
 
@@ -38,7 +45,7 @@ public class IoHandler
         }
         catch (Exception ex)
         {
-            // _logger.LogCritical(ex.ToString());
+            _logger.Fatal(ex.ToString());
             throw;
         }
 

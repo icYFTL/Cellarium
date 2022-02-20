@@ -1,3 +1,4 @@
+using Cellarium.Attributes;
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
@@ -5,6 +6,7 @@ using Cellarium.Commands.Parameters;
 namespace Cellarium.Commands;
 using Utils = Cellarium.Utils.Utils;
 
+[NoAuthNeeded]
 public class VersionCommand : BaseCommand
 {
     public sealed override string Description { get; init; }

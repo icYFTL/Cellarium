@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Cellarium.Api;
+﻿using Cellarium.Api;
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
@@ -21,7 +20,9 @@ public class ClearCountCommand : BaseCommand
         var externalPath = arguments.First(x => x.Content == "external_path").Value;
 
         if (!int.TryParse(arguments.First(x => x.Content == "max_count").Value, out var maxCount))
+        {
             throw new ArgumentException("Bad max_count passed");
+        }
 
         var deletePermanently = false;
         var _dp = arguments.FirstOrDefault(x => x.Content == "delete_permanently")?.Value;

@@ -1,21 +1,18 @@
 ﻿using Cellarium.Commands.Parameters;
 using Cellarium.Handlers;
+using Cellarium.Utils;
 
-if (!File.Exists(".token"))
+var logger = new Logger().GetLogger("Main");
+
+if (File.Exists(".token"))
 {
-    Console.WriteLine(".token file must exists");
-    Environment.Exit(-1);
+    var token = File.ReadAllText(".token").Trim();
+
+    if (String.IsNullOrEmpty(token))
+        File.Delete(".token");
+    else
+        Environment.SetEnvironmentVariable("token", token);
 }
-
-var token = File.ReadAllText(".token").Trim();
-
-if (token.Length == 0)
-{
-    Console.WriteLine(".token file must contains token");
-    Environment.Exit(-1);
-}
-
-Environment.SetEnvironmentVariable("token", token);
 
 var parsedArgs = ArgsHandler.Parse();
 
@@ -25,4 +22,11 @@ if (parsedArgs.Item1 == null)
     Environment.Exit(0);
 }
 
-parsedArgs.Item1.Run(parsedArgs.Item2 ?? Array.Empty<BaseParameter>());
+try
+{
+    parsedArgs.Item1.Run(parsedArgs.Item2 ?? Array.Empty<BaseParameter>());
+}
+catch (Exception ex)
+{
+    logger.Fatal(ex.Message);
+}

@@ -8,4 +8,6 @@ public class BaseParameter : BaseAlias
     public string Value { get; init; }
     public bool Optional { get; init; } = true;
     
+    public string Description { get; init; }
+    
 }

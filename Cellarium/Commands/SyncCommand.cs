@@ -81,7 +81,7 @@ public class SyncCommand : BaseCommand
             new ()
             {
                 Content = "force_create_external_path",
-                Value = "true"
+                Value = "false"
             },
             new ()
             {

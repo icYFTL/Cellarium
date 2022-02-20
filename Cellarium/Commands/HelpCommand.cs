@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using Cellarium.Attributes;
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
@@ -7,6 +8,7 @@ using Cellarium.Commands.Parameters;
 namespace Cellarium.Commands;
 using Utils = Utils.Utils;
 
+[NoAuthNeeded]
 public class HelpCommand : BaseCommand
 {
     public sealed override string Description { get; init; }
@@ -16,17 +18,16 @@ public class HelpCommand : BaseCommand
     {
         base.Run();
         
-        const string nameSpace = "Cellarium.Commands";
-        
-        var commands = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => String.Equals(t.Namespace, nameSpace, StringComparison.Ordinal) && !t.FullName!.Contains("<>"))
-            .ToList();
+        const string commandsNameSpace = "Cellarium.Commands";
 
+        var commands = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(t => String.Equals(t.Namespace, commandsNameSpace, StringComparison.Ordinal) && !t.FullName!.Contains("<>"))
+            .ToList();
         var sb = new StringBuilder($"Cellarium v{Utils.GetAssemblyVersion()}\n\nCommands:\n");
 
         foreach (var command in commands)
         {
-            var instance = (IBaseCommand)Activator.CreateInstance(command)!;
+            var instance = (BaseCommand)Activator.CreateInstance(command)!;
             sb.Append(String.Join(" or ", instance.Aliases.Select(x => x.AsArgument)));
             if (instance.Parameters?.Count > 0)
             {
@@ -42,7 +43,7 @@ public class HelpCommand : BaseCommand
             sb.Append($" -> {instance.Description}");
             sb.AppendLine();
         }
-        
+
         Console.Write(sb.ToString());
     }
 
