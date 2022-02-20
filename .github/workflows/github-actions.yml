@@ -31,7 +31,7 @@ jobs:
       - run: mkdir -p ./package/usr/cellarium
       - run: mkdir -p ./package/usr/bin
       - run: mv Cellarium/bin/Release/net6.0/* ./package/usr/cellarium
-      - run: "echo 'sudo ln -s /usr/cellarium/Cellarium /usr/bin/cellarium' >> ./package/DEBIAN/postinst"
+      - run: "echo 'sudo ln -s /usr/cellarium/linux-x64 /usr/bin/cellarium' >> ./package/DEBIAN/postinst"
       # - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
       - run: "chmod 755 ./package/DEBIAN/postinst"
 
