@@ -4,9 +4,9 @@ using Cellarium.Utils;
 
 var logger = new Logger().GetLogger("Main");
 
-if (File.Exists(".token"))
+if (File.Exists(Path.Join(AppDomain.CurrentDomain.BaseDirectory, ".token")))
 {
-    var token = File.ReadAllText(".token").Trim();
+    var token = File.ReadAllText(Path.Join(AppDomain.CurrentDomain.BaseDirectory, ".token")).Trim();
 
     if (String.IsNullOrEmpty(token))
         File.Delete(Path.Join(AppDomain.CurrentDomain.BaseDirectory, ".token"));
