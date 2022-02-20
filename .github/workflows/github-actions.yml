@@ -24,7 +24,7 @@ jobs:
 
       - name: Building the sources
         run: dotnet restore -r linux-x64
-      - run: dotnet build --configuration Release --no-restore --self-contained true --os linux
+      - run: dotnet publish Release --self-contained true --os linux
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
       - run: "echo 'Package: Cellarium\nVersion: 1.0\nSection: unknown\nPriority: optional\nDepends: libpthread-stubs0-dev,libc6,libstdc++6,gcc-multilib\nArchitecture: amd64\nEssential: no\nInstalled-Size: 20\nMaintainer: icyftl\nDescription: File manager for yandex drive' >> ./package/DEBIAN/control"
