@@ -36,7 +36,7 @@ public class SetTokenCommand : BaseCommand
             Environment.Exit(-1);
         }
 
-        File.WriteAllText(".token", token);
+        File.WriteAllText(Path.Join(System.Reflection.Assembly.GetEntryAssembly()!.Location, ".token"), token);
         _logger.Info("Token was set");
     }
 
