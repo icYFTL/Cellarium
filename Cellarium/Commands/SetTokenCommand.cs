@@ -28,7 +28,7 @@ public class SetTokenCommand : BaseCommand
 
         try
         {
-            Task.Run(() => new YandexCloudApi(new DiskHttpApi(token)).GetFileListAsync("/"));
+            var result = Task.Run(() => new YandexCloudApi(new DiskHttpApi(token)).GetFileListAsync("/")).Result;
         }
         catch
         {
