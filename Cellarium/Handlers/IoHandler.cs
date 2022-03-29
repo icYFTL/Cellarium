@@ -53,22 +53,18 @@ public class IoHandler
             files; //.Where(x => !LocalStorage.Contains(item => item.Path == x.FullName || (item.DoNotTouchUntil ?? DateTime.Now) > DateTime.Now));
     }
 
-    public void TransferToCloud(string internalPath, bool overwrite = false)
+    public void TransferToCloud(string internalPath, string tag, bool overwrite = false)
     {
-        var internal_root = internalPath.Split(Path.DirectorySeparatorChar).TakeLast(1).First();
-        var files = GetLocalFiles(internalPath) ?? throw new ArgumentNullException("GetLocalFiles()");
+        var files = GetLocalFiles(internalPath) ?? throw new ArgumentNullException(nameof(internalPath));
         var tasks = new List<Task>();
         foreach (var file in files)
         {
-            var backupProjectRoot =
-                file.FullName.Split(Path.DirectorySeparatorChar).SkipWhile(x => x != internal_root).Skip(1).First();
-
             tasks.Add(Task.Run(async () =>
             {
                 await _yandex.UploadFileAsync(new CellariumFile
                 {
                     InternalPath = file.FullName,
-                    ExternalPath = Path.Combine(_externalPath, backupProjectRoot),
+                    ExternalPath = Path.Combine(_externalPath, tag),
                     FileName = file.Name
                 }, overwrite);
             }));
