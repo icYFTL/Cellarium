@@ -11,7 +11,7 @@ using Utils = Utils.Utils;
 [NoAuthNeeded]
 public class HelpCommand : BaseCommand
 {
-    public sealed override string Description { get; init; }
+    public sealed override string? Description { get; init; }
     public sealed override List<BaseAlias> Aliases { get; init; }
     public sealed override List<BaseParameter>? Parameters { get; init; }
     public override void Run(params BaseParameter [] arguments)

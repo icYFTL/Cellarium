@@ -8,11 +8,10 @@ using Cellarium.Handlers;
 using YandexDisk.Client.Http;
 
 namespace Cellarium.Commands;
-using Utils = Utils.Utils;
 
 public class SyncCommand : BaseCommand
 {
-    public sealed override string Description { get; init; }
+    public sealed override string? Description { get; init; }
     public sealed override List<BaseAlias> Aliases { get; init; }
     public sealed override List<BaseParameter>? Parameters { get; init; }
     

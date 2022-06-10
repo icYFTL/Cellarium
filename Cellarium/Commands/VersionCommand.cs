@@ -9,7 +9,7 @@ using Utils = Cellarium.Utils.Utils;
 [NoAuthNeeded]
 public class VersionCommand : BaseCommand
 {
-    public sealed override string Description { get; init; }
+    public sealed override string? Description { get; init; }
     public sealed override List<BaseAlias> Aliases { get; init; }
     public sealed override List<BaseParameter>? Parameters { get; init; }
 

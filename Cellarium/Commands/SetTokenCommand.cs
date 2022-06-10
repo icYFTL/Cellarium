@@ -11,7 +11,7 @@ namespace Cellarium.Commands;
 [NoAuthNeeded]
 public class SetTokenCommand : BaseCommand
 {
-    public sealed override string Description { get; init; }
+    public sealed override string? Description { get; init; }
     public sealed override List<BaseAlias> Aliases { get; init; }
     public sealed override List<BaseParameter>? Parameters { get; init; }
 
@@ -22,7 +22,7 @@ public class SetTokenCommand : BaseCommand
         var token = arguments.First(x => x.Content == "token").Value;
         if (String.IsNullOrEmpty(token))
         {
-            _logger.Fatal("Invalid token");
+            Logger.Fatal("Invalid token");
             Environment.Exit(-1);
         }
 
@@ -32,12 +32,12 @@ public class SetTokenCommand : BaseCommand
         }
         catch
         {
-            _logger.Fatal("Invalid token");
+            Logger.Fatal("Invalid token");
             Environment.Exit(-1);
         }
 
         File.WriteAllText(Path.Join(AppDomain.CurrentDomain.BaseDirectory, ".token"), token);
-        _logger.Info("Token was set");
+        Logger.Info("Token was set");
     }
 
     public SetTokenCommand()
@@ -65,6 +65,6 @@ public class SetTokenCommand : BaseCommand
                 Optional = false
             },
         };
-        _logger = new Logger().GetLogger<SetTokenCommand>();
+        Logger = new Logger().GetLogger<SetTokenCommand>();
     }
 }

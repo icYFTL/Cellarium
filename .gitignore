@@ -6,3 +6,4 @@ obj/
 .token
 build/
 .vscode/
+tests/

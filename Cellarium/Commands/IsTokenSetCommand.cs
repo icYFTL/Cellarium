@@ -1,9 +1,7 @@
-using Cellarium.Api;
 using Cellarium.Attributes;
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
-using YandexDisk.Client.Http;
 using Cellarium.Utils;
 
 namespace Cellarium.Commands;
@@ -11,7 +9,7 @@ namespace Cellarium.Commands;
 [NoAuthNeeded]
 public class IsTokenSetCommand : BaseCommand
 {
-    public sealed override string Description { get; init; }
+    public sealed override string? Description { get; init; }
     public sealed override List<BaseAlias> Aliases { get; init; }
     public sealed override List<BaseParameter>? Parameters { get; init; }
 
@@ -20,9 +18,9 @@ public class IsTokenSetCommand : BaseCommand
         base.Run(arguments);
 
         if (Environment.GetEnvironmentVariable("token") == null)
-            _logger.Warn("Token is not set");
+            Logger.Warn("Token is not set");
         else
-            _logger.Info("Token is set");
+            Logger.Info("Token is set");
     }
 
     public IsTokenSetCommand()
@@ -37,6 +35,6 @@ public class IsTokenSetCommand : BaseCommand
             }
         };
         Parameters = null;
-        _logger = new Logger().GetLogger<SetTokenCommand>();
+        Logger = new Logger().GetLogger<SetTokenCommand>();
     }
 }
