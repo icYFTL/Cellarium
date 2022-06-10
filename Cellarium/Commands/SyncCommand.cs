@@ -21,6 +21,7 @@ public class SyncCommand : BaseCommand
         
         var internalPath = arguments.First(x => x.Content == "internal_path").Value;
         var externalPath = arguments.First(x => x.Content == "external_path").Value;
+        var tag = arguments.First(x => x.Content == "tag").Value;
         
         var forceCreateExternalPath = false;
         var _fcep = arguments.FirstOrDefault(x => x.Content == "force_create_external_path")?.Value;
@@ -41,10 +42,16 @@ public class SyncCommand : BaseCommand
         if (!String.IsNullOrEmpty(_o))
             if (!bool.TryParse(_o, out overwrite))
                 throw new ArgumentException("Bad overwrite passed");
+
+        /*var compress = false;
+        var _comp = arguments.FirstOrDefault(x => x.Content == "compress")?.Value;
+        if (!String.IsNullOrEmpty(_comp))
+            if (!bool.TryParse(_comp, out compress))
+                throw new ArgumentException("Bad compress passed");*/
         
         var yandexCloudApi = new YandexCloudApi(new DiskHttpApi(Environment.GetEnvironmentVariable("token")), clear);
         var handler = new IoHandler(yandexCloudApi, externalPath, forceCreateExternalPath);
-        handler.TransferToCloud(internalPath, overwrite);
+        handler.TransferToCloud(internalPath, tag, overwrite);
     }
 
     public SyncCommand()
@@ -77,6 +84,12 @@ public class SyncCommand : BaseCommand
                 Value = "/",
                 Optional = false
             },
+            new()
+            {
+                Content = "tag",
+                Value = "test",
+                Optional = false
+            },
             new ()
             {
                 Content = "force_create_external_path",
@@ -91,7 +104,12 @@ public class SyncCommand : BaseCommand
             {
                 Content = "overwrite",
                 Value = "false"
-            }
+            },
+            // new ()
+            // {
+            //     Content = "compress",
+            //     Value = "false"
+            // }
         };
     }
 }
