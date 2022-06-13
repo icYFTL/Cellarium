@@ -9,31 +9,15 @@ public class IoHandler
 {
     private readonly string _externalPath;
     private readonly YandexCloudApi _yandex;
-    private readonly bool _forcePathCreate;
     private readonly ILogger _logger;
     
-    public IoHandler(YandexCloudApi yandex,  string externalPath, bool forcePathCreate = false)
+    public IoHandler(YandexCloudApi yandex,  string externalPath)
     {
         _externalPath = externalPath;
         _yandex = yandex;
-        _forcePathCreate = forcePathCreate;
         _logger = new Logger().GetLogger<IoHandler>();
-        CreateExternalPath();
     }
-
-    private async void CreateExternalPath()
-    {
-        if (!_yandex.IsPathExistsAsync(_externalPath).Result)
-        {
-            if (_forcePathCreate)
-                await _yandex.CreatePathAsync(_externalPath);
-            else
-            {
-                _logger.Fatal($"External path {_externalPath} does not exist");
-                throw new InvalidOperationException();
-            }
-        }
-    }
+    
 
     private IEnumerable<FileInfo> GetLocalFiles(string internalPath)
     {
@@ -53,7 +37,7 @@ public class IoHandler
             files; //.Where(x => !LocalStorage.Contains(item => item.Path == x.FullName || (item.DoNotTouchUntil ?? DateTime.Now) > DateTime.Now));
     }
 
-    public void TransferToCloud(string internalPath, string tag, bool overwrite = false)
+    public void TransferToCloud(string internalPath, string tag, bool overwrite = false, bool forceCreateExternalPath = false)
     {
         var files = GetLocalFiles(internalPath) ?? throw new ArgumentNullException(nameof(internalPath));
         var tasks = new List<Task>();
@@ -66,7 +50,7 @@ public class IoHandler
                     InternalPath = file.FullName,
                     ExternalPath = Path.Combine(_externalPath, tag),
                     FileName = file.Name
-                }, overwrite);
+                }, overwrite, forceCreateExternalPath);
             }));
         }
 

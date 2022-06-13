@@ -76,7 +76,7 @@ public static class ArgsHandler
         if (parsedCommands.Count > 1)
         {
             logger.Fatal("Too many commands in a row.");
-            Environment.Exit(0);
+            Environment.Exit(-1);
         }
         
         else if (!parsedCommands.Any())

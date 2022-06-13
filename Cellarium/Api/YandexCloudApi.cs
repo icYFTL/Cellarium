@@ -8,6 +8,7 @@ using NLog;
 namespace Cellarium.Api;
 
 using Logger = Utils.Logger;
+
 public class YandexCloudApi
 {
     private readonly IDiskApi _yandex;
@@ -27,7 +28,7 @@ public class YandexCloudApi
     private void OnError(string path, string taskType, string fileType, string ex) =>
         _logger.Error($"File({fileType}): {path}\n{ex}");
 
-    public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false,
+    public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false, bool forceCreateExternalPath = false,
         Action<String, String, String>? onSuccess = null, Action<String, String, String, String>? onError = null)
     {
         onSuccess ??= OnSuccess;
@@ -119,12 +120,37 @@ public class YandexCloudApi
             return false;
         }
     }
-
-    public async Task<bool> CreatePathAsync(string externalPath)
+    
+    private async Task<bool> CreatePathAsync(string externalPath)
     {
         try
         {
-            await _yandex.Commands.CreateDictionaryAsync(externalPath);
+            var pathSegments = externalPath.Split("/").Skip(1).ToArray();
+            var sub = $"/{pathSegments[0]}";
+            try
+            {
+                await _yandex.Commands.CreateDictionaryAsync(sub);
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.Contains("existent")) // Idk how to handle it properly
+                    throw;
+            }
+
+            for (var i = 1; i < pathSegments.Length; ++i)  // Cause we don't have method to create full path...
+            {
+                sub += $"/{pathSegments[i]}";
+                try
+                {
+                    await _yandex.Commands.CreateDictionaryAsync(sub);
+                }
+                catch (Exception ex)
+                {
+                    if (!ex.Message.Contains("existent")) // Idk how to handle it properly
+                        throw;
+                }
+            }
+
             return true;
         }
         catch

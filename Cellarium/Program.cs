@@ -29,4 +29,5 @@ try
 catch (Exception ex)
 {
     logger.Fatal(ex.Message);
+    Environment.Exit(-1);
 }

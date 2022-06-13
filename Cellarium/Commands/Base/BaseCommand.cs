@@ -20,7 +20,7 @@ public class BaseCommand
             if (!args.Contains(param.AsArgument))
             {
                 Logger.Fatal($"Missing parameter: {param.Content}");
-                Environment.Exit(0);
+                Environment.Exit(-1);
             }    
         }
     }

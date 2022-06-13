@@ -50,8 +50,8 @@ public class SyncCommand : BaseCommand
                 throw new ArgumentException("Bad compress passed");*/
         
         var yandexCloudApi = new YandexCloudApi(new DiskHttpApi(Environment.GetEnvironmentVariable("token")), clear);
-        var handler = new IoHandler(yandexCloudApi, externalPath, forceCreateExternalPath);
-        handler.TransferToCloud(internalPath, tag, overwrite);
+        var handler = new IoHandler(yandexCloudApi, externalPath);
+        handler.TransferToCloud(internalPath, tag, overwrite, forceCreateExternalPath);
     }
 
     public SyncCommand()
