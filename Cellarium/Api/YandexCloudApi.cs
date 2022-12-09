@@ -1,13 +1,11 @@
+using Cellarium.Models;
+using NLog;
 using YandexDisk.Client;
 using YandexDisk.Client.Clients;
 using YandexDisk.Client.Protocol;
-using Cellarium.Models;
-using NLog;
-
+using Logger = Cellarium.Utils.Logger;
 
 namespace Cellarium.Api;
-
-using Logger = Utils.Logger;
 
 public class YandexCloudApi
 {
@@ -55,7 +53,7 @@ public class YandexCloudApi
         }
         catch (Exception ex)
         {
-            onError(file.InternalPath, "Upload", "Internal", ex.ToString());
+            onError(file.InternalPath, "Upload", "Internal", ex.Message);
             // _logger.LogError($"[Uploading]\nStatus: Exception; Path: {file.InternalPath}\n{ex}");
             // LocalStorage.Get().First(x => x.Path == file.InternalPath).DoNotTouchUntil = DateTime.Now + TimeSpan.FromHours(1);
             // await Task.FromException(ex);
@@ -177,7 +175,7 @@ public class YandexCloudApi
         }
         catch (Exception ex)
         {
-            onError(externalPath, "Delete", "External", ex.ToString());
+            onError(externalPath, "Delete", "External", ex.Message);
             return false;
         }
     }

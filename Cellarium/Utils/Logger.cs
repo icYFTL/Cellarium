@@ -1,3 +1,4 @@
+using System.Text;
 using NLog;
 using NLog.Targets;
 
@@ -17,6 +18,8 @@ public class Logger
             var consoleTarget = new ConsoleTarget("logconsole");
             consoleTarget.DetectConsoleAvailable = true;
             consoleTarget.AutoFlush = true;
+            consoleTarget.Encoding = Encoding.UTF8;
+            consoleTarget.Layout = "${message}";
             logger.LogFactory.Configuration.AddTarget(consoleTarget);
             logger.LogFactory.Configuration.AddRule(LogLevel.Debug, LogLevel.Fatal, consoleTarget);
         }

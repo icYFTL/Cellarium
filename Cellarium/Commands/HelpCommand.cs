@@ -6,50 +6,86 @@ using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
 
 namespace Cellarium.Commands;
-using Utils = Utils.Utils;
 
 [NoAuthNeeded]
-public class HelpCommand : BaseCommand
+public sealed class HelpCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-    public override void Run(params BaseParameter [] arguments)
+    public override void Run(params BaseParameter[] arguments)
     {
-        base.Run();
-        
+        base.Run(arguments);
+
+        var comm = arguments.FirstOrDefault(x => x.Content == "command")?.Value;
+
         const string commandsNameSpace = "Cellarium.Commands";
 
         var commands = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => String.Equals(t.Namespace, commandsNameSpace, StringComparison.Ordinal) && !t.FullName!.Contains("<>"))
-            .ToList();
-        var sb = new StringBuilder($"Cellarium v{Utils.GetAssemblyVersion()}\n\nCommands:\n");
+            .Where(t => String.Equals(t.Namespace, commandsNameSpace, StringComparison.Ordinal) &&
+                        !t.FullName!.Contains("<>")).ToList();
 
-        foreach (var command in commands)
+        var sb = new StringBuilder($"Cellarium v{Utils.Utils.GetAssemblyVersion()}\n\n");
+        if (!String.IsNullOrEmpty(comm))
         {
-            var instance = (BaseCommand)Activator.CreateInstance(command)!;
-            sb.Append(String.Join(" or ", instance.Aliases.Select(x => x.AsArgument)));
-            if (instance.Parameters?.Count > 0)
+            sb.Append($"Command [{comm}]:\n");
+            var found = false;
+            foreach (var command in commands.OrderByDescending(x => x.FullName))
             {
-                sb.Append(" [ ");
-                foreach (var param in instance.Parameters ?? new List<BaseParameter>())
+                var instance = (BaseCommand)Activator.CreateInstance(command)!;
+                if (instance.Aliases.Select(x => x.Content).Contains(comm.ToLower()))
                 {
-                    sb.Append($"{param.AsArgument}={param.Value} ");
-                }
+                    sb.Append(String.Join(" or ", instance.Aliases.Select(x => x.AsArgument)));
+                    if (instance.Parameters?.Count > 0)
+                    {
+                        sb.Append(" [ ");
+                        foreach (var param in instance.Parameters ?? new List<BaseParameter>())
+                        {
+                            sb.Append($"{param.AsArgument}={param.Value} ");
+                        }
 
-                sb.Append("] ");
+                        sb.Append("] ");
+                    }
+
+                    sb.Append($" -> {instance.Description}\n");
+                    sb.Append($"{instance.FullDescription ?? "No full description provided for this command"}");
+                    found = true;
+                    break;
+                }
             }
 
-            sb.Append($" -> {instance.Description}");
-            sb.AppendLine();
+            if (!found)
+                sb.Append($"Command [{comm}] not found");
         }
+        else
+        {
+            sb.Append("Commands:\n");
+            foreach (var command in commands)
+            {
+                var instance = (BaseCommand)Activator.CreateInstance(command)!;
+                sb.Append(String.Join(" or ", instance.Aliases.Select(x => x.AsArgument)));
+                if (instance.Parameters?.Count > 0)
+                {
+                    sb.Append(" [ ");
+                    foreach (var param in instance.Parameters ?? new List<BaseParameter>())
+                    {
+                        sb.Append($"{param.AsParameter}={param.Value} ");
+                    }
+
+                    sb.Append("] ");
+                }
+
+                sb.Append($" -> {instance.Description}");
+                sb.AppendLine();
+            }
+        }
+
 
         Console.Write(sb.ToString());
     }
 
     public HelpCommand()
     {
-        Description = "Show help";
+        Description = "Shows help";
+        FullDescription = @"Just help command, nothing interesting :D
+command - Any command from -h";
         Aliases = new List<BaseAlias>
         {
             new()
@@ -57,12 +93,20 @@ public class HelpCommand : BaseCommand
                 Type = AliasTypeEnum.Abbreviation,
                 Content = "h"
             },
-            new ()
+            new()
             {
                 Type = AliasTypeEnum.Fully,
                 Content = "help"
             }
         };
-        Parameters = null;
+        Parameters = new()
+        {
+            new()
+            {
+                Content = "command",
+                Value = "",
+                Optional = true
+            }
+        };
     }
 }

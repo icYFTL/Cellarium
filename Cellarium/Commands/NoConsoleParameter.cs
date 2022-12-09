@@ -18,7 +18,8 @@ public sealed class NoConsoleParameter : BaseCommand
     
     public NoConsoleParameter()
     {
-        Description = "Disable console output";
+        Enabled = false;
+        Description = "Disables console output";
         NeedToBeFirst = true;
         Aliases = new List<BaseAlias>
         {

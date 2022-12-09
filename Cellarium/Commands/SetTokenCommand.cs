@@ -9,11 +9,8 @@ using YandexDisk.Client.Http;
 namespace Cellarium.Commands;
 
 [NoAuthNeeded]
-public class SetTokenCommand : BaseCommand
+public sealed class SetTokenCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
 
     public override void Run(params BaseParameter[] arguments)
     {
@@ -42,7 +39,9 @@ public class SetTokenCommand : BaseCommand
 
     public SetTokenCommand()
     {
-        Description = "Set yandex drive token";
+        Description = "Sets yandex drive token";
+        FullDescription = @"Sets yandex drive token to .token file in cellarium base path
+token - Token from yandex";
         Aliases = new List<BaseAlias>
         {
             new()

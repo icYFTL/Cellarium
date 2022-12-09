@@ -1,7 +1,4 @@
-using System.Diagnostics;
 using System.Reflection;
-using NLog;
-using NLog.Targets;
 
 namespace Cellarium.Utils;
 

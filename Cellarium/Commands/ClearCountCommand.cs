@@ -7,12 +7,9 @@ using YandexDisk.Client.Http;
 
 namespace Cellarium.Commands;
 
-public class ClearCountCommand : BaseCommand
+public sealed class ClearCountCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-    
+
     public override void Run(params BaseParameter [] arguments)
     {
         base.Run(arguments);
@@ -37,7 +34,12 @@ public class ClearCountCommand : BaseCommand
 
     public ClearCountCommand()
     {
-        Description = "Clear files by max count";
+        Description = "Clears files by max count";
+        FullDescription = @"Deletes the oldest files
+external_path - Path to clear
+max_count - How many files save in path
+delete_permanently - Send files to trash or delete forever
+";
         Aliases = new List<BaseAlias>
         {
             new()

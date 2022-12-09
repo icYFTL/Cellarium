@@ -18,6 +18,7 @@ public sealed class VerboseParameter : BaseCommand
     
     public VerboseParameter()
     {
+        Enabled = false;
         Description = "Verbose output";
         NeedToBeFirst = true;
         Aliases = new List<BaseAlias>

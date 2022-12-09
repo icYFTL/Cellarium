@@ -7,12 +7,8 @@ using YandexDisk.Client.Http;
 
 namespace Cellarium.Commands;
 
-public class ClearExpiredCommand : BaseCommand
+public sealed class ClearExpiredCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-    
     public override void Run(params BaseParameter [] arguments)
     {
         base.Run(arguments);
@@ -35,7 +31,11 @@ public class ClearExpiredCommand : BaseCommand
 
     public ClearExpiredCommand()
     {
-        Description = "Clear old files";
+        Description = "Deletes old files";
+        FullDescription = @"Deletes all files which are older provided delta
+external_path - Path to clear
+delta - Max delta between now and date when file was created (in days)
+delete_permanently - Send files to trash or delete forever";
         Aliases = new List<BaseAlias>
         {
             new()

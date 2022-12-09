@@ -4,24 +4,19 @@ using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
 
 namespace Cellarium.Commands;
-using Utils = Cellarium.Utils.Utils;
 
 [NoAuthNeeded]
-public class VersionCommand : BaseCommand
+public sealed class VersionCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-
     public override void Run(params BaseParameter[] arguments)
     {
         base.Run(arguments);
-        Console.WriteLine($"{Utils.GetAssemblyVersion()}");
+        Console.WriteLine($"{Utils.Utils.GetAssemblyVersion()}");
     }
 
     public VersionCommand()
     {
-        Description = "Get cellarium version";
+        Description = "Gets cellarium version";
         Aliases = new List<BaseAlias>
         {
             new()

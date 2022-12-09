@@ -7,12 +7,8 @@ using Cellarium.Utils;
 namespace Cellarium.Commands;
 
 [NoAuthNeeded]
-public class IsTokenSetCommand : BaseCommand
+public sealed class IsTokenSetCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-
     public override void Run(params BaseParameter[] arguments)
     {
         base.Run(arguments);
@@ -25,7 +21,7 @@ public class IsTokenSetCommand : BaseCommand
 
     public IsTokenSetCommand()
     {
-        Description = "Check if token exists";
+        Description = "Checks if token exists";
         Aliases = new List<BaseAlias>
         {
             new()

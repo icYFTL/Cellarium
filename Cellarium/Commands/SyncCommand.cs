@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Text;
 using Cellarium.Api;
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
@@ -9,19 +7,17 @@ using YandexDisk.Client.Http;
 
 namespace Cellarium.Commands;
 
-public class SyncCommand : BaseCommand
+public sealed class SyncCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-    
+
     public override void Run(params BaseParameter [] arguments)
     {
         base.Run(arguments);
         
         var internalPath = arguments.First(x => x.Content == "internal_path").Value;
         var externalPath = arguments.First(x => x.Content == "external_path").Value;
-        var tag = arguments.First(x => x.Content == "tag").Value;
+        var tag = arguments.FirstOrDefault(x => x.Content == "tag")?.Value ?? "";
+        
         
         var forceCreateExternalPath = false;
         var _fcep = arguments.FirstOrDefault(x => x.Content == "force_create_external_path")?.Value;
@@ -56,7 +52,14 @@ public class SyncCommand : BaseCommand
 
     public SyncCommand()
     {
-        Description = "Sync specified directory with yandex drive";
+        Description = "Syncs specified directory with yandex drive";
+        FullDescription = @"Send all files from specified directory to the yandex drive
+internal_path - Internal path to sync
+external_path - External path on yandex drive
+tag - Tag of upload
+force_create_external_path - Creates external path if not exists
+clear - Clear transferred files on local machine
+overwrite - Overwrite files on yandex drive if exists";
         Aliases = new List<BaseAlias>
         {
             new()
@@ -87,8 +90,8 @@ public class SyncCommand : BaseCommand
             new()
             {
                 Content = "tag",
-                Value = "test",
-                Optional = false
+                Value = "<empty>",
+                Optional = true
             },
             new ()
             {

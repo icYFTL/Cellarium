@@ -5,12 +5,8 @@ using Cellarium.Utils;
 
 namespace Cellarium.Commands;
 
-public class RemoveTokenCommand : BaseCommand
+public sealed class RemoveTokenCommand : BaseCommand
 {
-    public sealed override string? Description { get; init; }
-    public sealed override List<BaseAlias> Aliases { get; init; }
-    public sealed override List<BaseParameter>? Parameters { get; init; }
-
     public override void Run(params BaseParameter[] arguments)
     {
         base.Run(arguments);
@@ -29,7 +25,7 @@ public class RemoveTokenCommand : BaseCommand
 
     public RemoveTokenCommand()
     {
-        Description = "Remove yandex drive token";
+        Description = "Removes yandex drive token";
         Aliases = new List<BaseAlias>
         {
             new()
