@@ -25,13 +25,16 @@ jobs:
       - name: Restoring...
         run: dotnet restore -r linux-x64
       - run: dotnet publish ./Cellarium/Cellarium.csproj --configuration Release --self-contained true -r linux-x64
+      - name: Getting version...
+        run: 'echo "CELLARIUM_VERSION=$(/root/.dotnet/dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)" >> $GITHUB_ENV'
+        # run: export CELLARIUM_VERSION=$(/root/.dotnet/dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
-      - run: "echo 'Package: Cellarium\nVersion: 1.0\nSection: unknown\nPriority: optional\nDepends: libpthread-stubs0-dev,libc6,libstdc++6,gcc-multilib\nArchitecture: amd64\nEssential: no\nInstalled-Size: 20\nMaintainer: icyftl\nDescription: File manager for yandex drive' >> ./package/DEBIAN/control"
-      - run: mkdir -p ./package/usr/cellarium
+      - run: "echo 'Package: Cellarium\nVersion: ${{env.CELLARIUM_VERSION}}\nSection: unknown\nPriority: optional\nDepends: libpthread-stubs0-dev,libc6,libstdc++6,gcc-multilib\nArchitecture: amd64\nEssential: no\nInstalled-Size: 20\nMaintainer: icyftl\nDescription: File manager for yandex drive' >> ./package/DEBIAN/control"
+      - run: mkdir -p ./package/usr/share/cellarium
       - run: mkdir -p ./package/usr/bin
-      - run: mv Cellarium/bin/Release/net6.0/linux-x64/* ./package/usr/cellarium
-      - run: "echo 'sudo ln -s /usr/cellarium/Cellarium /usr/bin/cellarium' >> ./package/DEBIAN/postinst"
+      - run: mv Cellarium/bin/Release/net6.0/linux-x64/* ./package/usr/share/cellarium
+      - run: "echo 'sudo ln -s /usr/share/cellarium/Cellarium /usr/bin/cellarium' >> ./package/DEBIAN/postinst"
       # - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
       - run: "chmod 755 ./package/DEBIAN/postinst"
 
@@ -44,13 +47,13 @@ jobs:
         run: sudo dpkg -i ./cellarium.deb
 
       # - run: 'echo "CELLARIUM_VERSION=$(grep -oP \"<Version>(.*)</Version>\" ./Cellarium/Cellarium.csproj | grep -oEi \"[0-9]+\.[0-9]+\.[0-9]+\")" >> $GITHUB_ENV'
-      - run: 'echo "CELLARIUM_VERSION=$(cellarium -v)" >> $GITHUB_ENV'
+      # - run: 'echo "CELLARIUM_VERSION=$(cellarium -v)" >> $GITHUB_ENV'
       - name: Making .md release body
         run: "echo '# v${{env.CELLARIUM_VERSION}}\n\n${{github.event.commits[0].message}}' >> release.md" # CELLARIUM_VERSION=$(/usr/bin/cellarium -v) && 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: Release_${{env.CELLARIUM_VERSION}}
+          tag: "Release ${{env.CELLARIUM_VERSION}}"
           artifacts: "cellarium.deb"
           bodyFile: "release.md"
           token: ${{ secrets.GITHUB_TOKEN }}
