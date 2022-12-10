@@ -53,7 +53,7 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: "Release ${{env.CELLARIUM_VERSION}}"
+          tag: "Release_${{env.CELLARIUM_VERSION}}"
           artifacts: "cellarium.deb"
           bodyFile: "release.md"
           token: ${{ secrets.GITHUB_TOKEN }}
