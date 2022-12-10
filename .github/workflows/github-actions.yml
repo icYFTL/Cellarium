@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore -r linux-x64
       - run: dotnet publish ./Cellarium/Cellarium.csproj --configuration Release --self-contained true -r linux-x64
       - name: Getting version...
-        run: 'echo "CELLARIUM_VERSION=$(/root/.dotnet/dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)" >> $GITHUB_ENV'
+        run: 'echo "CELLARIUM_VERSION=$(dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)" >> $GITHUB_ENV'
         # run: export CELLARIUM_VERSION=$(/root/.dotnet/dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
