@@ -38,7 +38,7 @@ public class YandexCloudApi
         try
         {
             if (!IsPathExistsAsync(file.ExternalPath).Result)
-                await CreatePathAsync(file.ExternalPath);
+                await CreatePathAsync(Path.GetDirectoryName(file.ExternalPath)); // TODO: Change
 
             await _yandex.Files.UploadFileAsync(file.FullExternalPath, overwrite, file.InternalPath,
                 CancellationToken.None);
