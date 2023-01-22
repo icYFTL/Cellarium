@@ -41,6 +41,7 @@ jobs:
       - run: "chmod +x ./CellariumDaemon/register_service.sh"
       - run: mv CellariumDaemon/bin/Release/net6.0/linux-x64/* ./package/usr/share/cellarium/daemon
       - run: mv CellariumDaemon/register_service.sh ./package/usr/share/cellarium/daemon
+      - run: mv CellariumDaemon/cellarium_daemon.service ./package/usr/share/cellarium/daemon
       - run: "echo 'sudo ln -s /usr/share/cellarium/Cellarium /usr/bin/cellarium \n' >> ./package/DEBIAN/postinst"
       - run: "echo '/bin/bash /usr/share/cellarium/daemon/register_service.sh' >> ./package/DEBIAN/postinst"
       
