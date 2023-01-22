@@ -43,7 +43,7 @@ jobs:
       - run: mv CellariumDaemon/register_service.sh ./package/usr/share/cellarium/daemon
       - run: mv CellariumDaemon/cellarium_daemon.service ./package/usr/share/cellarium/daemon
       - run: "echo 'sudo ln -s /usr/share/cellarium/Cellarium /usr/bin/cellarium \n' >> ./package/DEBIAN/postinst"
-      # - run: "echo '/bin/bash /usr/share/cellarium/daemon/register_service.sh' >> ./package/DEBIAN/postinst"
+      - run: "echo '/bin/bash /usr/share/cellarium/daemon/register_service.sh' >> ./package/DEBIAN/postinst"
       
       # - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
       - run: "chmod 755 ./package/DEBIAN/postinst"
