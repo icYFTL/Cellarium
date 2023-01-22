@@ -50,14 +50,14 @@ public class DaemonHandler
         if (!File.Exists("/etc/systemd/system/cellarium_daemon.service"))
             return false;
 
-        var result = Utils.Utils.RunCommandWithOutput("systemctl status cellarium_daemon");
+        var result = Utils.Utils.RunCommandWithOutput("systemctl", "status cellarium_daemon");
 
         return result is not null;
     }
 
     public string? GetStatus()
     {
-        var result = Utils.Utils.RunCommandWithOutput("systemctl status cellarium_daemon");
+        var result = Utils.Utils.RunCommandWithOutput("systemctl", "status cellarium_daemon");
         if (result is null)
             throw new SystemException("Something went wrong with cellarium_daemon.");
 
@@ -73,14 +73,14 @@ public class DaemonHandler
 
     public void Enable()
     {
-        var result = Utils.Utils.RunCommandWithOutput("systemctl start cellarium_daemon");
+        var result = Utils.Utils.RunCommandWithOutput("systemctl", "start cellarium_daemon");
         if (result is null)
             throw new SystemException("Something went wrong with cellarium_daemon.");
     }
 
     public void Disable()
     {
-        var result = Utils.Utils.RunCommandWithOutput("systemctl stop cellarium_daemon");
+        var result = Utils.Utils.RunCommandWithOutput("systemctl", "stop cellarium_daemon");
         if (result is null)
             throw new SystemException("Something went wrong with cellarium_daemon.");
     }

@@ -11,20 +11,19 @@ public static class Utils
             .InformationalVersion;
     }
 
-    public static string? RunCommandWithOutput(string command)
+    public static string? RunCommandWithOutput(string service, string args)
     {
         string filename;
-        string args;
 
         switch (Environment.OSVersion.Platform)
         {
             case PlatformID.MacOSX:
             case PlatformID.Unix:
-                filename = command;
+                filename = service;
                 break;
             case PlatformID.Win32Windows:
                 filename = "cmd.exe";
-                args = $"/C {command}";
+                args = $"/C {service} {args}";
                 break;
             default:
                 throw new NotSupportedException($"OS {Environment.OSVersion.Platform} is not supported");
@@ -37,6 +36,7 @@ public static class Utils
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = filename,
+                    Arguments = args,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
