@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-CellariumDaemon-C711D4AE-4440-4003-A584-7F691C587BB2</UserSecretsId>
+        <Version>1.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

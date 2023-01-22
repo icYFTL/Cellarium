@@ -1,11 +1,18 @@
 using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Parameters;
+using Cellarium.Utils;
+using Microsoft.Extensions.Configuration;
 using NLog;
 
 namespace Cellarium.Commands.Base;
 
 public class BaseCommand
 {
+    protected readonly IConfiguration Configuration;
+    public BaseCommand()
+    {
+        Configuration = Constants.Configuration;
+    }
     public string? Description { get; init; }
     public string? FullDescription { get; init; }
     public List<BaseAlias> Aliases { get; init; } = null!;

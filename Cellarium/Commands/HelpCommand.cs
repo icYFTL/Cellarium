@@ -66,7 +66,11 @@ public sealed class HelpCommand : BaseCommand
                     sb.Append(" [ ");
                     foreach (var param in instance.Parameters ?? new List<BaseParameter>())
                     {
-                        sb.Append($"{param.AsParameter}={param.Value} ");
+                        sb.Append($"{param.AsParameter}");
+                        if (param.Value is not null)
+                        {
+                            sb.Append($"={param.Value} ");
+                        }
                     }
 
                     sb.Append("] ");

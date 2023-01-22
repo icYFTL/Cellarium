@@ -99,18 +99,29 @@ public static class ArgsHandler
         
         foreach (var param in args)
         {
-            var sParam = param.Split("=");
-            if (sParam.Length != 2)
+            if (param.Contains("="))
             {
-                logger.Fatal($"Not a valid parameter: {param}");
-                Environment.Exit(-1);
-            }
+                var sParam = param.Trim().Split("=");
+                if (sParam.Length != 2)
+                {
+                    logger.Fatal($"Not a valid parameter: {param}");
+                    Environment.Exit(-1);
+                }
 
-            parameters.Add(new BaseParameter
+                parameters.Add(new BaseParameter
+                {
+                    Content = sParam[0].ToLower().Trim().Replace("--", "").Replace("-", ""),
+                    Value = sParam[1]
+                });
+            }
+            else
             {
-                Content = sParam[0].ToLower().Trim().Replace("--", "").Replace("-", ""),
-                Value = sParam[1]
-            });
+                var sParam = param.Trim();
+                parameters.Add(new BaseLessParameter
+                {
+                    Content = sParam.ToLower().Trim().Replace("--", "").Replace("-", "")
+                });
+            }
         }
 
         return new Tuple<BaseCommand?, BaseParameter[]?>(command, parameters.ToArray());

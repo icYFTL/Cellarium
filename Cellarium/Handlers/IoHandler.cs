@@ -50,7 +50,7 @@ public class IoHandler
                 await _yandex.UploadFileAsync(new CellariumFile
                 {
                     InternalPath = file.FullName,
-                    ExternalPath = Path.Combine(_externalPath, tag),
+                    ExternalDir = Path.Combine(_externalPath, tag),
                     FileName = file.Name
                 }, overwrite, forceCreateExternalPath);
             }));

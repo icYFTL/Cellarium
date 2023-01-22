@@ -1,23 +1,23 @@
 ﻿using Cellarium.Api;
-using Cellarium.Handlers;
 using Cellarium.Models;
 
 namespace CellariumDaemon.Logic;
 
 public class WatchDog
 {
-    private readonly IoHandler _ioHandler;
     private readonly YandexCloudApi _yapi;
-    private readonly string _path;
-    private string _rootDir;
+    private readonly string _baseInternalPath;
+    private readonly string _baseExternalPath;
+    private string _rootDir = String.Empty;
+    private readonly ILogger<WatchDog> _logger;
 
-    private string rootDir
+    private string RootDir
     {
         get
         {
             if (String.IsNullOrEmpty(_rootDir))
             {
-                _rootDir = new DirectoryInfo(_path).Name;
+                _rootDir = new DirectoryInfo(_baseInternalPath).Name;
             }
 
             return _rootDir;
@@ -25,14 +25,24 @@ public class WatchDog
     }
 
 
-    public WatchDog(string path, YandexCloudApi yapi)
+    public WatchDog(YandexCloudApi yapi, IConfiguration configuration, ILogger<WatchDog> logger)
     {
-        // TODO: Check path existence
         _yapi = yapi;
+        _baseInternalPath = configuration["InternalBasePath"];
+        _baseExternalPath = configuration["ExternalBasePath"];
+        _logger = logger;
 
+        if (!Directory.Exists(_baseInternalPath))
+        {
+            _logger.LogError($"{_baseInternalPath} -> not a valid path");
+            throw new ArgumentException("Not a valid base internal path");
+        }
+    }
+
+    public void Run()
+    {
         var watcher = new FileSystemWatcher();
-        watcher.Path = path;
-        _path = path;
+        watcher.Path = _baseInternalPath;
 
         watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                                         | NotifyFilters.FileName | NotifyFilters.DirectoryName;
@@ -44,47 +54,47 @@ public class WatchDog
         watcher.Renamed += new RenamedEventHandler(OnRenamed);
 
         watcher.EnableRaisingEvents = true;
-    }
-
-    private string CatOffPath(string sourcePath, string catFrom, bool withLeadingSlash = true)
-    {
-        var index = sourcePath.IndexOf(catFrom, StringComparison.Ordinal);
-        var result = sourcePath.Substring(index);
-
-        if (!withLeadingSlash)
-        {
-            if (result[0] == '/')
-                result = result.Substring(1);
-        }
-        else if (result[0] != '/')
-            result = result.Insert(0, "/");
-
-        return result;
+        watcher.IncludeSubdirectories = true;
     }
 
     private async void OnDeleted(object source, FileSystemEventArgs e)
     {
-        _yapi.RemoveFileAsync(CatOffPath(e.FullPath, rootDir));
+        _yapi.RemoveFileAsync(Path.Join(_baseExternalPath, Utils.Utils.CatOffPathToFile(e.FullPath, RootDir)));
     }
 
     private async void OnCreated(object source, FileSystemEventArgs e)
     {
-        var path = CatOffPath(e.FullPath, rootDir);
+        var path = Path.Join(_baseExternalPath, Utils.Utils.CatOffPathToDir(e.FullPath, RootDir));
         _yapi.UploadFileAsync(new CellariumFile
         {
-            ExternalPath = path,
-            FileName = e.Name,
+            ExternalDir = path,
+            FileName = Path.GetFileName(e.Name),
             InternalPath = e.FullPath
-        }, forceCreateExternalPath:true, overwrite:true);
+        }, forceCreateExternalPath: true, overwrite: true);
     }
 
     private void OnChanged(object source, FileSystemEventArgs e)
     {
-        Console.WriteLine("File: " + e.FullPath + " " + e.ChangeType);
+        var path = Path.Join(_baseExternalPath, Utils.Utils.CatOffPathToDir(e.FullPath, RootDir));
+        _yapi.UploadFileAsync(new CellariumFile
+        {
+            ExternalDir = path,
+            FileName = Path.GetFileName(e.Name),
+            InternalPath = e.FullPath
+        }, forceCreateExternalPath: true, overwrite: true);
     }
 
+    // TODO:
     private void OnRenamed(object source, RenamedEventArgs e)
     {
-        Console.WriteLine("File: {0} renamed to {1}", e.OldFullPath, e.FullPath);
+        var path = Path.Join(_baseExternalPath, Utils.Utils.CatOffPathToDir(e.FullPath, RootDir));
+        _yapi.UploadFileAsync(new CellariumFile
+        {
+            ExternalDir = path,
+            FileName = Path.GetFileName(e.Name),
+            InternalPath = e.FullPath
+        }, forceCreateExternalPath: true, overwrite: true);
+
+        _yapi.RemoveFileAsync(Path.Join(_baseExternalPath, Utils.Utils.CatOffPathToFile(e.OldFullPath, RootDir)));
     }
 }

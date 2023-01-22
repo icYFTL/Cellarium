@@ -2,14 +2,14 @@ namespace Cellarium.Models;
 
 public class CellariumFile
 {
-    private readonly string _externalPath = null!;
-    public string ExternalPath
+    private readonly string _externalDir = null!;
+    public string ExternalDir
     {
-        get => _externalPath;
-        init => _externalPath = value.Replace("\\", "/");
+        get => _externalDir;
+        init => _externalDir = value.Replace("\\", "/");
     }
 
     public string InternalPath { get; init; } = null!;
     public string FileName { get; init; } = null!;
-    public string FullExternalPath => Path.Combine(ExternalPath, FileName).Replace("\\", "/");
+    public string FullExternalPath => Path.Combine(ExternalDir, FileName).Replace("\\", "/");
 }

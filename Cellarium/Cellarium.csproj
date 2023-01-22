@@ -5,16 +5,20 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.12</Version>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="NLog" Version="5.0.0-rc2" />
     <PackageReference Include="YandexDisk.Client" Version="1.3.22" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="NLog.Release.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

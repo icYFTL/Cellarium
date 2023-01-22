@@ -25,22 +25,28 @@ jobs:
       - name: Restoring...
         run: dotnet restore -r linux-x64
       - run: dotnet publish ./Cellarium/Cellarium.csproj --configuration Release --self-contained true -r linux-x64
-      - name: Getting version...
-        run: 'echo "CELLARIUM_VERSION=$(dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)" >> $GITHUB_ENV'
+      - run: dotnet publish ./CellariumDaemon/CellariumDaemon.csproj --configuration Release --self-contained true -r linux-x64
+      - name: Getting versions...
+        # run: 'echo "CELLARIUM_VERSION=$(dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)" >> $GITHUB_ENV'
+        run: "echo CELLARIUM_VERSION=$(grep -oP '(?<=<Version>)[^<]+' ./Cellarium/Cellarium.csproj) >> $GITHUB_ENV"
+        run: "echo CELLARIUM_DAEMON_VERSION=$(grep -oP '(?<=<Version>)[^<]+' ./CellariumDaemon/CellariumDaemon.csproj) >> $GITHUB_ENV"
         # run: export CELLARIUM_VERSION=$(/root/.dotnet/dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
       - run: "echo 'Package: Cellarium\nVersion: ${{env.CELLARIUM_VERSION}}\nSection: unknown\nPriority: optional\nDepends: libpthread-stubs0-dev,libc6,libstdc++6,gcc-multilib\nArchitecture: amd64\nEssential: no\nInstalled-Size: 20\nMaintainer: icyftl\nDescription: File manager for yandex drive' >> ./package/DEBIAN/control"
       - run: mkdir -p ./package/usr/share/cellarium
+      - run: mkdir -p ./package/usr/share/cellarium/daemon
       - run: mkdir -p ./package/usr/bin
       - run: mv Cellarium/bin/Release/net6.0/linux-x64/* ./package/usr/share/cellarium
-      - run: "echo 'sudo ln -s /usr/share/cellarium/Cellarium /usr/bin/cellarium' >> ./package/DEBIAN/postinst"
+      - run: mv CellariumDaemon/bin/Release/net6.0/linux-x64/* ./package/usr/share/cellarium/daemon
+      - run: "chmod +x ./CellariumDaemon/register_service.sh"
+      - run: "echo 'sudo ln -s /usr/share/cellarium/Cellarium /usr/bin/cellarium \n' >> ./package/DEBIAN/postinst"
+      - run: "echo '/bin/bash /usr/share/cellarium/daemon/register_service.sh' >> ./package/DEBIAN/postinst"
+      
       # - run: "echo 'apt update && apt install -y libpthread-stubs0-dev libc6 libstdc++6 libc6 gcc-multilib' >> ./package/DEBIAN/postinst"
       - run: "chmod 755 ./package/DEBIAN/postinst"
-
       - name: Making dpkg
         run: dpkg-deb --build ./package
-      
       - run: mv package.deb cellarium.deb
       - run: sudo apt update && sudo apt install gcc-multilib -y
       - name: Trying to install deb

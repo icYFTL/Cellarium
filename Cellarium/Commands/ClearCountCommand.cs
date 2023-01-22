@@ -14,7 +14,7 @@ public sealed class ClearCountCommand : BaseCommand
     {
         base.Run(arguments);
         
-        var externalPath = arguments.First(x => x.Content == "external_path").Value;
+        var externalPath = arguments.First(x => x.Content == "external_path").Value!;
 
         if (!int.TryParse(arguments.First(x => x.Content == "max_count").Value, out var maxCount))
         {
@@ -22,9 +22,9 @@ public sealed class ClearCountCommand : BaseCommand
         }
 
         var deletePermanently = false;
-        var _dp = arguments.FirstOrDefault(x => x.Content == "delete_permanently")?.Value;
-        if (!String.IsNullOrEmpty(_dp))
-            if (!Boolean.TryParse(_dp, out deletePermanently))
+        var dp = arguments.FirstOrDefault(x => x.Content == "delete_permanently")?.Value;
+        if (!String.IsNullOrEmpty(dp))
+            if (!Boolean.TryParse(dp, out deletePermanently))
                 throw new ArgumentException("Bad delete_permanently passed");
 
         var yandexCloudApi = new YandexCloudApi(new DiskHttpApi(Environment.GetEnvironmentVariable("token")));

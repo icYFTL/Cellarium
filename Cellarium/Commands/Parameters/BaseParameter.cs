@@ -5,9 +5,9 @@ namespace Cellarium.Commands.Parameters;
 public class BaseParameter : BaseAlias
 {
     public override AliasTypeEnum Type => AliasTypeEnum.Other;
-    public string Value { get; init; } = null!;
-    public bool Optional { get; init; } = true;
+    public virtual string? Value { get; init; }
+    public virtual bool Optional { get; init; } = true;
     
-    public string? Description { get; init; }
+    public virtual string? Description { get; init; }
     
 }

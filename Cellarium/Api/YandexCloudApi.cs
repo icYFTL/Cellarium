@@ -26,7 +26,8 @@ public class YandexCloudApi
     private void OnError(string path, string taskType, string fileType, string ex) =>
         _logger.Error($"File({fileType}): {path}\n{ex}");
 
-    public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false, bool forceCreateExternalPath = false,
+    public async Task<bool> UploadFileAsync(CellariumFile file, bool overwrite = false,
+        bool forceCreateExternalPath = false,
         Action<String, String, String>? onSuccess = null, Action<String, String, String, String>? onError = null)
     {
         onSuccess ??= OnSuccess;
@@ -37,8 +38,8 @@ public class YandexCloudApi
         // _logger.LogDebug($"[Uploading]\nStatus: Started; Path: {file.InternalPath}");
         try
         {
-            if (!IsPathExistsAsync(file.ExternalPath).Result)
-                await CreatePathAsync(Path.GetDirectoryName(file.ExternalPath)); // TODO: Change
+            if (!IsPathExistsAsync(file.ExternalDir).Result)
+                await CreatePathAsync(file.ExternalDir); // TODO: Change
 
             await _yandex.Files.UploadFileAsync(file.FullExternalPath, overwrite, file.InternalPath,
                 CancellationToken.None);
@@ -118,7 +119,7 @@ public class YandexCloudApi
             return false;
         }
     }
-    
+
     private async Task<bool> CreatePathAsync(string externalPath)
     {
         try
@@ -135,7 +136,7 @@ public class YandexCloudApi
                     throw;
             }
 
-            for (var i = 1; i < pathSegments.Length; ++i)  // Cause we don't have method to create full path...
+            for (var i = 1; i < pathSegments.Length; ++i) // Cause we don't have method to create full path...
             {
                 sub += $"/{pathSegments[i]}";
                 try
