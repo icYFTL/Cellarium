@@ -18,6 +18,11 @@ public class DaemonHandler
 
     public DaemonHandler(YandexCloudApi yandexCloudApi)
     {
+        if (!(Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
+        {
+            throw new NotSupportedException($"Cellarium Daemon is not supported on {Environment.OSVersion.Platform} yet.");
+        }
+
         if (!IsRegistered())
         {
             throw new CheckoutException(

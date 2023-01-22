@@ -20,8 +20,7 @@ public static class Utils
         {
             case PlatformID.MacOSX:
             case PlatformID.Unix:
-                filename = "/bin/bash";
-                args = $"-e '{command}'";
+                filename = command;
                 break;
             case PlatformID.Win32Windows:
                 filename = "cmd.exe";
@@ -38,7 +37,6 @@ public static class Utils
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = filename,
-                    Arguments = args,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
