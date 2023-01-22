@@ -8,10 +8,8 @@ namespace Cellarium.Commands.Base;
 
 public class BaseCommand
 {
-    protected readonly IConfiguration Configuration;
     public BaseCommand()
     {
-        Configuration = Constants.Configuration;
     }
     public string? Description { get; init; }
     public string? FullDescription { get; init; }
