@@ -29,7 +29,7 @@ jobs:
       - name: Getting versions...
         # run: 'echo "CELLARIUM_VERSION=$(dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)" >> $GITHUB_ENV'
         run: "echo CELLARIUM_VERSION=$(grep -oP '(?<=<Version>)[^<]+' ./Cellarium/Cellarium.csproj) >> $GITHUB_ENV"
-        run: "echo CELLARIUM_DAEMON_VERSION=$(grep -oP '(?<=<Version>)[^<]+' ./CellariumDaemon/CellariumDaemon.csproj) >> $GITHUB_ENV"
+      - run: "echo CELLARIUM_DAEMON_VERSION=$(grep -oP '(?<=<Version>)[^<]+' ./CellariumDaemon/CellariumDaemon.csproj) >> $GITHUB_ENV"
         # run: export CELLARIUM_VERSION=$(/root/.dotnet/dotnet ./Cellarium/bin/Release/net6.0/linux-x64/Cellarium.dll -v)
       - name: Configuring dpkg
         run: mkdir -p ./package/DEBIAN
