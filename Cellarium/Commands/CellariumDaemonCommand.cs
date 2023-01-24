@@ -54,7 +54,7 @@ public class CellariumDaemonCommand : BaseCommand
         }
         if (restart is not null)
         {
-            
+            daemonHandler.Restart();
         }
         if (internalBasePath is not null)
         {
