@@ -18,7 +18,7 @@ public class Worker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var wd = new WatchDog(
-            new YandexCloudApi(new DiskHttpApi(""), clear: false), _configuration, _loggerFactory.CreateLogger<WatchDog>());
+            new YandexCloudApi(new DiskHttpApi(_configuration["Token"]), clear: false), _configuration, _loggerFactory.CreateLogger<WatchDog>());
         wd.Run();
     }
 }

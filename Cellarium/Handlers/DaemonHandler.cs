@@ -52,7 +52,7 @@ public class DaemonHandler
 
         var result = Utils.Utils.RunCommandWithOutput("systemctl", "status cellarium_daemon");
 
-        return result is not null;
+        return !(result ?? "could not be found").Contains("could not be found");
     }
 
     public string? GetStatus()
@@ -71,8 +71,25 @@ public class DaemonHandler
         return null;
     }
 
+    public void Restart()
+    {
+        var result = Utils.Utils.RunCommandWithOutput("systemctl", "stop cellarium_daemon");
+        if (result is null)
+            throw new SystemException("Something went wrong with cellarium_daemon.");
+        
+        _daemonConfiguration["Token"] = Environment.GetEnvironmentVariable("token");
+        _syncDaemonConfig();
+        
+        result = Utils.Utils.RunCommandWithOutput("systemctl", "start cellarium_daemon");
+        if (result is null)
+            throw new SystemException("Something went wrong with cellarium_daemon.");
+    }
+    
     public void Enable()
     {
+        _daemonConfiguration["Token"] = Environment.GetEnvironmentVariable("token");
+        _syncDaemonConfig();
+        
         var result = Utils.Utils.RunCommandWithOutput("systemctl", "start cellarium_daemon");
         if (result is null)
             throw new SystemException("Something went wrong with cellarium_daemon.");

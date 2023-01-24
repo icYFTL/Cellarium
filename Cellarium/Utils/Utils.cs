@@ -39,7 +39,7 @@ public static class Utils
                     Arguments = args,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true,
+                    CreateNoWindow = true
                 }
             };
             process.Start();

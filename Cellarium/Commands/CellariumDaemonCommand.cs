@@ -3,6 +3,7 @@ using Cellarium.Commands.Aliases;
 using Cellarium.Commands.Base;
 using Cellarium.Commands.Parameters;
 using Cellarium.Handlers;
+using Cellarium.Utils;
 using YandexDisk.Client.Http;
 
 namespace Cellarium.Commands;
@@ -18,6 +19,7 @@ public class CellariumDaemonCommand : BaseCommand
         var status = arguments.FirstOrDefault(x => x.Content == "status");
         var enable = arguments.FirstOrDefault(x => x.Content == "enable");
         var disable = arguments.FirstOrDefault(x => x.Content == "disable");
+        var restart = arguments.FirstOrDefault(x => x.Content == "restart");
         var internalBasePath = arguments.FirstOrDefault(x => x.Content == "internal_base_path");
         var externalBasePath = arguments.FirstOrDefault(x => x.Content == "external_base_path");
         
@@ -50,6 +52,10 @@ public class CellariumDaemonCommand : BaseCommand
             Logger.Warn($"Can\'t disable daemon. Current status is {status}");
             return;
         }
+        if (restart is not null)
+        {
+            
+        }
         if (internalBasePath is not null)
         {
             daemonHandler.SetInternalBasePath(internalBasePath.Value);
@@ -71,6 +77,7 @@ public class CellariumDaemonCommand : BaseCommand
 status - Daemon's status
 enable - Enable daemon
 disable - Disable daemon
+restart - Restart daemon
 internal_base_path - Daemon's watch path
 external_base_path - External path on YD";
 
@@ -121,6 +128,12 @@ external_base_path - External path on YD";
             },
             new()
             {
+                Content = "restart",
+                Value = null,
+                Optional = true
+            },
+            new()
+            {
                 Content = "internal_base_path",
                 Value = "/etc/test",
                 Optional = true
@@ -132,6 +145,6 @@ external_base_path - External path on YD";
                 Optional = true
             }
         };
-        
+        Logger = new Logger().GetLogger<CellariumDaemonCommand>();
     }
 }
