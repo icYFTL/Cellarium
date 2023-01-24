@@ -1,7 +1,8 @@
 [Unit]
 Description= Cellarium driver
 [Service]
-Type=simple 
+Type=simple
+WorkingDirectory=/usr/share/cellarium/daemon/ 
 ExecStart=/usr/share/cellarium/daemon/CellariumDaemon
 [Install]
 WantedBy=multi-user.target
